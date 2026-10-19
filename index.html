@@ -62,7 +62,7 @@ async function generate(){
  const btn=$("make"); const oldLabel=btn.textContent;
  const payload={mode, niche:$("niche").value.trim(), audience:$("audience").value.trim(), offer:$("offer").value.trim(), style:$("style").value, extra:$("extra").value.trim()};
  if(!payload.niche && !payload.offer && !payload.extra){$("status").textContent="Заполни хотя бы одно поле.";return;}
- if(AI_API_URL.includes("contentpilot-ai.reg64rus.workers.dev")){ $("status").textContent="Сначала укажи URL Cloudflare Worker в коде сайта. Инструкция — в README."; return; }
+if(AI_API_URL.includes("ВСТАВЬ_URL")){ $("status").textContent="Сначала укажи URL Cloudflare Worker в коде сайта. Инструкция — в README."; return; }
  btn.disabled=true; btn.textContent="✦ Генерирую…"; $("status").textContent="Запрос отправлен нейросети…";
  try {
    const response=await fetch(AI_API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
