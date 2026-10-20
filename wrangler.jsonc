@@ -2,5 +2,5 @@
   "$schema": "https://developers.cloudflare.com/workers/wrangler/configuration/schema.json",
   "name": "contentpilot-ai",
   "main": "src/index.js",
-  "compatibility_date": "2026-10-21"
+  "compatibility_date": "2025-09-15"
 }
