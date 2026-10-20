@@ -26,6 +26,11 @@ export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
     const allowedOrigin = env.ALLOWED_ORIGIN || "";
+    console.log("CORS diagnostic", {
+  method: request.method,
+  origin: JSON.stringify(origin),
+  allowedOrigin: JSON.stringify(allowedOrigin)
+});
 
     // Обрабатываем предварительный запрос браузера.
     if (request.method === "OPTIONS") {
