@@ -1,13 +1,14 @@
-export default {
-  async fetch(request, env) {
+
 const corsHeaders = (origin) => ({
   "Access-Control-Allow-Origin": origin,
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Max-Age": "86400",
   "Vary": "Origin"
 });
 
 const allowedModes = new Set(["video", "client", "ad", "calendar"]);
+
 const trim = (value, max = 1200) =>
   String(value ?? "").trim().slice(0, max);
 
@@ -27,6 +28,17 @@ export default {
     const origin = request.headers.get("Origin") || "";
     const allowedOrigin = env.ALLOWED_ORIGIN || "";
 
+    // Обрабатываем предварительный запрос браузера.
+    if (request.method === "OPTIONS") {
+      if (!allowedOrigin || origin !== allowedOrigin) {
+        return new Response(null, { status: 403 });
+      }
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders(allowedOrigin)
+      });
+    }
+
     if (!allowedOrigin || origin !== allowedOrigin) {
       return new Response(
         JSON.stringify({ error: "Источник запроса не разрешён." }),
@@ -42,20 +54,12 @@ export default {
 
     const cors = corsHeaders(allowedOrigin);
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: cors });
-    }
-
     if (request.method !== "POST") {
       return json({ error: "Разрешён только POST." }, 405, cors);
     }
 
     if (!env.GEMINI_API_KEY) {
-      return json(
-        { error: "На сервере не настроен ключ нейросети." },
-        500,
-        cors
-      );
+      return json({ error: "На сервере не настроен ключ нейросети." }, 500, cors);
     }
 
     let body;
@@ -101,9 +105,9 @@ export default {
     const endpoint =
       `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
 
-    let response;
+    let apiResponse;
     try {
-      response = await fetch(endpoint, {
+      apiResponse = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -121,12 +125,12 @@ export default {
       return json({ error: "Не удалось подключиться к Gemini API." }, 502, cors);
     }
 
-    const result = await response.json().catch(() => ({}));
+    const result = await apiResponse.json().catch(() => ({}));
 
-    if (!response.ok) {
-      console.error("Gemini API error", response.status, result.error?.message);
+    if (!apiResponse.ok) {
+      console.error("Gemini API error", apiResponse.status, result.error?.message);
       return json({
-        error: `Gemini API вернул ошибку ${response.status}. Проверь модель и доступ к API.`
+        error: `Gemini API вернул ошибку ${apiResponse.status}. Проверь модель и доступ к API.`
       }, 502, cors);
     }
 
@@ -142,3 +146,4 @@ export default {
     return json({ text }, 200, cors);
   }
 };
+
