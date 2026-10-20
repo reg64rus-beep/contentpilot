@@ -1,3 +1,17 @@
+const origin = request.headers.get("Origin") || "";
+const allowedOrigin = env.ALLOWED_ORIGIN || "";
+
+if (request.method === "OPTIONS") {
+  if (!allowedOrigin || origin !== allowedOrigin) {
+    return new Response(null, { status: 403 });
+  }
+
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders(allowedOrigin)
+  });
+}
+
 const corsHeaders = (origin) => ({
   "Access-Control-Allow-Origin": origin,
   "Access-Control-Allow-Methods": "POST, OPTIONS",
