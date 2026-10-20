@@ -1,4 +1,3 @@
-
 const corsHeaders = (origin) => ({
   "Access-Control-Allow-Origin": origin,
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -146,4 +145,3 @@ export default {
     return json({ text }, 200, cors);
   }
 };
-
