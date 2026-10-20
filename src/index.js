@@ -1,12 +1,3 @@
-if (request.method === "OPTIONS") {
-  if (!allowedOrigin || origin !== allowedOrigin) {
-    return new Response(null, { status: 403 });
-  }
-
-  return new Response(null, {
-    status: 204,
-    headers: corsHeaders(allowedOrigin)
-  });
 }
 const corsHeaders = (origin) => ({
   "Access-Control-Allow-Origin": origin,
